@@ -1,4 +1,4 @@
-## Empty Pail Bank Transactions
+## Empty Pail Bank 
 
 Empty Pail, A Bank akin to ISP - providing access to the financial networks, enable new products, new services, API-driven banking IFTTT - style functionality. A web service that helps create recipes to automate digital tasks.
 
