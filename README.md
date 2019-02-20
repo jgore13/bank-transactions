@@ -1,6 +1,14 @@
-## Welcome to GitHub Pages
+## Empty Pail Bank Transactions
 
-You can use the [editor on GitHub](https://github.com/jgore13/bank-transactions/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+$git commit -m "Update README.
+>
+>
+skip-checks: true
+
+$git commit -m "Refactor usability tests.
+>
+>
+request-checks: true
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
