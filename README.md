@@ -1,16 +1,8 @@
 ## Empty Pail Bank Transactions
 
-$git commit -m "Update README.
->
->
-skip-checks: true
+Empty Pail, A Bank akin to ISP - providing access to the financial networks, enable new products, new services, API-driven banking IFTTT - style functionality. A web service that helps create recipes to automate digital tasks.
 
-$git commit -m "Refactor usability tests.
->
->
-request-checks: true
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Made with ❤️ by Empty Pail Corporation
 
 ### Markdown
 
