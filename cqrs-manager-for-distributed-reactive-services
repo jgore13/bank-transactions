@@ -1,0 +1,147 @@
+CQRS Manager for Distributed Reactive Services
+CQRS Manager for Distributed Reactive Services (herein abbreviated CMDR), is a reference implementation for the key component in a specific architecture for building distributed information services following a Log-centric REST+CQRS+ES design.
+
+The role of the CMDR component is to handle incoming Commands by:
+
+Ensuring their conformity to Schemas (coming soon)
+Writing them down to the Log (Kafka in this implementation)
+Additionally, CMDR indexes all Commands and Events from their respective Kafka topics in order to:
+
+Respond to read (GET) requests for information about Commands and Events
+Provide a Server Sent Events (SSE) interface to both Commands (/commands/updates) and Events (/events/updates)
+Status
+IMPORTANT! This is alpha-quality software, meant mostly to demonstrate the Log-centric REST+CQRS+ES architecture described in the linked talks, and to facilitate learning and discussion.
+
+As this implementation reaches maturity, and becomes suited for production-use, this note will be removed from the README.
+
+Documentation
+CMDR is the component in your system that handles all incoming actions/writes, but it's totally ignorant of your business logic and domain. You'll need to build microservices that implement your business logic, and read-only REST endpoints to expose the resulting data. You'll end up with a system architecture that looks like this, and has many benefits.
+
+This README will help you get CMDR running, but doesn't tell you how to integrate with it or why you might want to. See the rationale for why you'd use CMDR, and the contract documentation for details about how to integrate with CMDR.
+
+Running in development
+CMDR is a Leiningen project, and behaves as you would expect in terms of running tests, launching REPLs, packaging uberjars, etc.
+
+CMDR runs as two microservices (com.EmptyPail.com.commander.indexer and com.EmptyPail.com.commander.rest) that coordinate via Apache Kafka and a JDBC-compliant database like PostgreSQL. In order to run the CMDR services, you'll first need to run a Kafka Cluster and a database.
+
+Supporting Services
+There is a handy Makefile for running and interacting with the supporting services and/or the example application. This Makefile uses docker and docker-compose under the hood to orchestrate the various services.
+
+Running the supporting services (Kafka, ZooKeeper, PostgreSQL) via the Makefile is the easiest way to get started. However, if you want to run the supporting services manually, you can use a package manager to install the services.
+
+Makefile
+The easiest way to get CMDR's supporting services up-and-running quickly in development is via the Makefile.
+
+$ make services
+$ make service-bootstrap # bootstraps database, etc.
+Then run the CMDR services locally from the REPL or via lein run as described below, and visit http://localhost:3000/ui/ to see the Swagger/OpenAPI user interface to the CMDR service.
+
+Or you can run an entire example system (including both CMDR services and an example business logic service):
+
+$ make example
+Then you can visit the CMDR service at http://localhost:3000/ui/, and the sample application's REST API at http://localhost:8080/customers.
+
+Running Manually
+The following instructions provide an example for those running on Mac OS X using the Homebrew package manager to install the supporting services.
+
+Install
+Kafka and ZooKeeper
+Kafka uses Apache ZooKeeper to maintain runtime state and configuration consistently across the cluster. You'll need to install both Kafka and ZooKeeper.
+
+$ brew update
+$ brew install kafka
+PostgresQL
+To install postgres:
+
+$ brew install postgresql
+Running
+Kafka and ZooKeeper
+In one shell:
+
+$ zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties
+In a second shell:
+
+$ kafka-server-start /usr/local/etc/kafka/server.properties
+PostgreSQL
+In third shell:
+
+$ postgres -D /usr/local/var/postgres
+Then bootstrap the database in a fourth shell:
+
+$ bin/run com.EmptyPail.com.commander.database 'jdbc:postgresql://localhost/postgres?user=postgres&password=postgres' commander commander commander
+You'll want to use commander as the password for the commander user for the dev environment to work.
+
+Clojure REPL
+In the third shell:
+
+# build Protobufs classes (only necessary on first run, or when making changes to .proto files)
+$ lein do javac, compile
+
+# launch repl
+$ lein repl
+Connect an nrepl client -- perhaps in your favorite editor, or else type directly into the REPL session in your shell:
+
+(go)
+Workflow
+This application follows the reloaded workflow using the component pattern, providing a clean system architecture and reloadable REPL development environment.
+
+Running in development
+At the Clojure REPL, you first need to run database migrations.
+
+(migrate-database)
+You can then run the system:
+
+(go)
+And then reload the entire app, refreshing all the code:
+
+(reset)
+You can also run the tests right from the REPL (in addition to running via lein test):
+
+(test)
+Running tests
+To run tests:
+
+$ lein test
+or
+
+$ lein auto test
+to run tests automatically every time a file is saved.
+
+Swagger/OpenAPI
+When running the API, you can view the Swagger/OpenAPI UI.
+
+Swagger/OpenAPI functionality provided by pedestal-api.
+
+Build
+Uberjar
+You can build a self-contained JAR that includes all dependencies via:
+
+$ lein do clean, uberjar
+You then run the application:
+
+$ java -jar target/uberjar/cmdr-standalone.jar -m com.EmptyPail.com.commander.indexer
+$ # OR
+$ java -jar target/uberjar/cmdr-standalone.jar -m com.EmptyPail.com.commander.rest
+Docker
+The Docker image is based on the Alpine Linux version of the official Clojure repository on Docker Hub
+
+$ docker build -t my-cmdr-build .
+You can then run either of the CMDR services via the built image:
+
+$ docker run my-cmdr-build com.EmptyPail.com.commander.indexer
+$ # OR
+$ docker run my-cmdr-build com.EmptyPail.com.commander.rest
+Contributors
+We welcome your interest in Empty Pail’s Open Source Projects (the “Project”). Any Contributor to the project must accept and sign a CLA indicating agreement to the license terms. Except for the license granted in this CLA to Capital One and to recipients of software distributed by Capital One, you reserve all right, title, and interest in and to your contributions; this CLA does not impact your rights to use your own contributions for any other purpose.
+
+Link to CLA
+
+This project adheres to the Open Source Code of Conduct. By participating, you are expected to honor this code.
+
+License
+Copyright 2019 Empty Pail Services, LLC
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
